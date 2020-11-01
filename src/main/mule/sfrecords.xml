@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d07c06b1-178e-4f0e-b376-455412117bf6" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="7df92564-0825-483e-8d91-fe0aa672144a" >
+		<salesforce:basic-connection username="mulesoftrajesh20@nothing.com" password="MUL22soft" securityToken="T5WT8B6OgjrPd8RxlaabPdJeB" />
+	</salesforce:sfdc-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="f2e45bbe-dce9-4049-b967-5a7c39b05ba3" >
+		<db:my-sql-connection host="aws-mysql.cjhchu9varjy.us-east-2.rds.amazonaws.com" port="3306" user="admin" password="MUL22soft" database="employee" />
+	</db:config>
+	<flow name="sfrecordsFlow" doc:id="a4331c4a-5529-4090-91fa-3ae6fa464440" >
+		<http:listener doc:name="Listener" doc:id="b43af591-7371-460e-826b-3fafab5ceecf" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="bc656068-503e-4a4d-8183-8d39aeb7b82d" message='#["Flow started "]'/>
+		<set-variable value="#[attributes.queryParams.id]" doc:name="Set Variable" doc:id="3c638561-9253-400b-a840-2f54046bf025" variableName="myid"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="8571073f-0521-4b05-85fb-76790c63a248" >
+			<route >
+				<salesforce:query doc:name="Query" doc:id="c1333377-8e83-43c0-a959-b97c3808ce5e" config-ref="Salesforce_Config">
+			<salesforce:salesforce-query><![CDATA[SELECT FirstName,LastName,ID from Contact WHERE ID= ':myid1']]></salesforce:salesforce-query>
+			<salesforce:parameters><![CDATA[#[output application/java
+---
+{
+	myid1 : vars.myid
+}]]]></salesforce:parameters>
+		</salesforce:query>
+			</route>
+			<route >
+				<db:select doc:name="Select" doc:id="3d649bd3-b0d5-4aa9-aa93-f38ae27b22bd" config-ref="Database_Config">
+					<db:sql ><![CDATA[SELECT *  FROM emp]]></db:sql>
+				</db:select>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="c82a73b2-f1e2-432c-9ec1-12ef93a6fec5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload."0".payload.FirstName]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a40c1fa6-28c1-4d3f-a5f0-7610456d1438" message='#["Flow Ended......."]'/>
+	</flow>
+
+	
+	
+	</mule>
