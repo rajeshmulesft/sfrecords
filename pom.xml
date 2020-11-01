@@ -36,6 +36,19 @@
                             <artifactId>mysql-connector-java-8.0.18</artifactId>
                         </sharedLibrary>
                     </sharedLibraries>
+                    
+                    <cloudHubDeployment>
+						    <uri>https://anypoint.mulesoft.com</uri>
+						    <muleVersion>${mule.version}</muleVersion>
+						    <!-- Deploy User Parameter -->
+						    <username>${anypoint.username}</username>
+						    <password>${anypoint.password}</password>
+						    <!-- Environment Parameter -->
+						    <environment>${cloudhub.environment}</environment>
+						    <applicationName>${cloudhub.app}</applicationName>
+						    <businessGroup>${cloudhub.bg}</businessGroup>
+						    <workerType>${cloudhub.worker}</workerType>
+						</cloudHubDeployment>
                 </configuration>
 			</plugin>
 		</plugins>
@@ -84,6 +97,7 @@
             <classifier>mule-plugin</classifier>
         </dependency>
     </dependencies>
+    
 
 	<repositories>
           <repository>
@@ -110,5 +124,6 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+    
 
 </project>
