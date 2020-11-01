@@ -45,6 +45,9 @@
 						    <password>MULE22soft</password>
 						    <!-- Environment Parameter -->
 						    <environment>Sandbox</environment>
+						    <workerType>MICRO</workerType>
+                        <objectStoreV2>true</objectStoreV2>
+						    
 						    <applicationName>sfrecords</applicationName>
 						    <businessGroup>abc</businessGroup>
 						    <workerType>1</workerType>
